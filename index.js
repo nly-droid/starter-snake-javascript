@@ -11,6 +11,7 @@
 // For more info see docs.battlesnake.com
 
 import runServer from './server.js';
+import { avoidMovingBackwards, avoidWalls, avoidYourself,avoidOtherSnakes } from './compile_safe_moves.js';
 
 // info is called when you create your Battlesnake on play.battlesnake.com
 // and controls your Battlesnake's appearance
@@ -49,32 +50,13 @@ function move(gameState) {
     right: true
   };
 
-  // We've included code to prevent your Battlesnake from moving backwards
-  const myHead = gameState.you.body[0];
-  const myNeck = gameState.you.body[1];
+  let board = gameState.board;
+  let you = gameState.you;
 
-  if (myNeck.x < myHead.x) {        // Neck is left of head, don't move left
-    isMoveSafe.left = false;
-
-  } else if (myNeck.x > myHead.x) { // Neck is right of head, don't move right
-    isMoveSafe.right = false;
-
-  } else if (myNeck.y < myHead.y) { // Neck is below head, don't move down
-    isMoveSafe.down = false;
-
-  } else if (myNeck.y > myHead.y) { // Neck is above head, don't move up
-    isMoveSafe.up = false;
-  }
-
-  // TODO: Step 1 - Prevent your Battlesnake from moving out of bounds
-  // boardWidth = gameState.board.width;
-  // boardHeight = gameState.board.height;
-
-  // TODO: Step 2 - Prevent your Battlesnake from colliding with itself
-  // myBody = gameState.you.body;
-
-  // TODO: Step 3 - Prevent your Battlesnake from colliding with other Battlesnakes
-  // opponents = gameState.board.snakes;
+  isMoveSafe = avoidMovingBackwards(board, you, isMoveSafe);
+  isMoveSafe = avoidWalls(board, you, isMoveSafe);
+  isMoveSafe = avoidYourself(board, you, isMoveSafe);
+  isMoveSafe = avoidOtherSnakes(board, you, isMoveSafe);
 
   // Are there any safe moves left?
   const safeMoves = Object.keys(isMoveSafe).filter(key => isMoveSafe[key]);
@@ -85,9 +67,6 @@ function move(gameState) {
 
   // Choose a random move from the safe moves
   const nextMove = safeMoves[Math.floor(Math.random() * safeMoves.length)];
-
-  // TODO: Step 4 - Move towards food instead of random, to regain health and survive longer
-  // food = gameState.board.food;
 
   console.log(`MOVE ${gameState.turn}: ${nextMove}`)
   return { move: nextMove };
