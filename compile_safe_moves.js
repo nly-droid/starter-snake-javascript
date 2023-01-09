@@ -20,7 +20,7 @@ export function avoidMovingBackwards(board, you, isMoveSafe) {
 }
 
 export function avoidWalls(board, you, isMoveSafe) {
-    // TODO: Step 1 - Prevent your Battlesnake from moving out of bounds
+  // TODO: Step 1 - Prevent your Battlesnake from moving out of bounds
   // boardWidth = gameState.board.width;
   // boardHeight = gameState.board.height;
   let boardWidth = board.width;
@@ -28,32 +28,57 @@ export function avoidWalls(board, you, isMoveSafe) {
 
   let myHead = you.body[0];  // Coordinates of your head
 
-  if (myHead.x == boardWidth - 1){
+  if (myHead.x == boardWidth - 1) {
     isMoveSafe.right = false;
   }
-  
+
   if (myHead.x == 0) {
     isMoveSafe.left = false;
   }
 
-  if (myHead.y == boardHeight - 1){
+  if (myHead.y == boardHeight - 1) {
     isMoveSafe.up = false;
   }
 
-  if (myHead.y == 0){
+  if (myHead.y == 0) {
     isMoveSafe.down = false;
   }
 
   return isMoveSafe
 }
 
-export function avoidYourself(board, you, isMoveSafe){
+export function avoidYourself(board, you, isMoveSafe) {
   // TODO: Step 2 - Prevent your Battlesnake from colliding with itself
-  // myBody = gameState.you.body;
+  // array [{x0: 3, y0: 2}, {x1, y1}]
+  let myBody = you.body;
+  // {x: 3, y: 4}
+  let myHead = myBody[0];
+  let myHeadX = myHead.x;
+
+  console.log(myHead);
+  console.log(myBody);
+  for(let i=0; i<myBody.length; i++){
+    let bodypart=myBody[i];
+    // Up
+    if(myHead.x==bodypart.x && myHead.y+1==bodypart.y)
+    {
+      isMoveSafe.up = false;
+    }
+    // Left
+    else if(myHead.x-1==bodypart.x && myHead.y==bodypart.y){
+       isMoveSafe.left = false;
+    }
+    // Down
+    else if(myHead.x=bodypart.x && myHead.y+1==bodypart.y){
+       isMoveSafe.down = false;
+    }
+  }
+  console.log(isMoveSafe);
+  
   return isMoveSafe
 }
 
-export function avoidOtherSnakes(board, you, isMoveSafe){
+export function avoidOtherSnakes(board, you, isMoveSafe) {
   // TODO: Step 3 - Prevent your Battlesnake from colliding with other Battlesnakes
   // opponents = gameState.board.snakes;
   return isMoveSafe
