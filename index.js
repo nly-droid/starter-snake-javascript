@@ -11,7 +11,7 @@
 // For more info see docs.battlesnake.com
 
 import runServer from './server.js';
-import { avoidMovingBackwards, avoidWalls, avoidYourself,avoidOtherSnakes } from './compile_safe_moves.js';
+import compileSafeMoves from './compile_safe_moves.js';
 
 // info is called when you create your Battlesnake on play.battlesnake.com
 // and controls your Battlesnake's appearance
@@ -53,13 +53,11 @@ function move(gameState) {
   let board = gameState.board;
   let you = gameState.you;
 
-  isMoveSafe = avoidMovingBackwards(board, you, isMoveSafe);
-  isMoveSafe = avoidWalls(board, you, isMoveSafe);
-  isMoveSafe = avoidYourself(board, you, isMoveSafe);
-  isMoveSafe = avoidOtherSnakes(board, you, isMoveSafe);
+  isMoveSafe = compileSafeMoves(board, you, isMoveSafe);
 
   // Are there any safe moves left?
   const safeMoves = Object.keys(isMoveSafe).filter(key => isMoveSafe[key]);
+  console.log(safeMoves)
   if (safeMoves.length == 0) {
     console.log(`MOVE ${gameState.turn}: No safe moves detected! Moving down`);
     return { move: "down" };

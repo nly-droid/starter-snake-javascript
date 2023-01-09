@@ -1,4 +1,12 @@
-export function avoidMovingBackwards(board, you, isMoveSafe) {
+export default function compileSafeMoves(board, you, isMoveSafe) {
+  isMoveSafe = avoidMovingBackwards(board, you, isMoveSafe);
+  isMoveSafe = avoidWalls(board, you, isMoveSafe);
+  isMoveSafe = avoidYourself(board, you, isMoveSafe);
+  isMoveSafe = avoidOtherSnakes(board, you, isMoveSafe);
+  return isMoveSafe
+}
+
+function avoidMovingBackwards(board, you, isMoveSafe) {
   // We've included code to prevent your Battlesnake from moving backwards
   const myHead = you.body[0];
   const myNeck = you.body[1];
@@ -19,7 +27,7 @@ export function avoidMovingBackwards(board, you, isMoveSafe) {
   return isMoveSafe;
 }
 
-export function avoidWalls(board, you, isMoveSafe) {
+function avoidWalls(board, you, isMoveSafe) {
   // TODO: Step 1 - Prevent your Battlesnake from moving out of bounds
   // boardWidth = gameState.board.width;
   // boardHeight = gameState.board.height;
@@ -47,7 +55,7 @@ export function avoidWalls(board, you, isMoveSafe) {
   return isMoveSafe
 }
 
-export function avoidBody(body, head, isMoveSafe) {
+function avoidBody(body, head, isMoveSafe) {
   // Don't count the tail because when the snake moves, the tail will move out of its current position.
   // TODO this does not avoid the future head - this requires predicting the opponent move or just avoid all of their possible moves.
   for (let i = 0; i < body.length; i++) {
@@ -73,7 +81,7 @@ export function avoidBody(body, head, isMoveSafe) {
   return isMoveSafe
 }
 
-export function avoidYourself(board, you, isMoveSafe) {
+function avoidYourself(board, you, isMoveSafe) {
   // TODO: Step 2 - Prevent your Battlesnake from colliding with itself
   // myBody = gameState.you.body;
   let myBody = you.body;
@@ -86,7 +94,7 @@ export function avoidYourself(board, you, isMoveSafe) {
   return isMoveSafe
 }
 
-export function avoidOtherSnakes(board, you, isMoveSafe) {
+function avoidOtherSnakes(board, you, isMoveSafe) {
   // TODO: Step 3 - Prevent your Battlesnake from colliding with other Battlesnakes
   let opponents = board.snakes;
   let myHead = you.body[0];
