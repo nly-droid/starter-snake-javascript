@@ -2,6 +2,7 @@ export function avoidMovingBackwards(board, you, isMoveSafe) {
   // We've included code to prevent your Battlesnake from moving backwards
   const myHead = you.body[0];
   const myNeck = you.body[1];
+  
 
   if (myNeck.x < myHead.x) {        // Neck is left of head, don't move left
     isMoveSafe.left = false;
@@ -44,17 +45,62 @@ export function avoidWalls(board, you, isMoveSafe) {
     isMoveSafe.down = false;
   }
 
-  return isMoveSafe
+  return isMoveSafe;
 }
 
 export function avoidYourself(board, you, isMoveSafe){
   // TODO: Step 2 - Prevent your Battlesnake from colliding with itself
-  // myBody = gameState.you.body;
-  return isMoveSafe
+
+  //use a for loop i=3
+  for(let i = 0; i < 3; i++){
+    //for each body parts, check the four positions 
+    //your body is at the right of your head 
+    if ((you.body[0].x-1 == you.body[i].x) && (you.body[0].y == you.body[i].y)){
+      isMoveSafe.left = false; 
+    }
+    //right
+    if ((you.body[0].x+1 == you.body[i].x) && (you.body[0].y == you.body[i].y)){
+      isMoveSafe.right = false; 
+    }
+    //down
+    if ((you.body[0].y-1 == you.body[i].y) && (you.body[0].x == you.body[i].x)){
+      isMoveSafe.down = false; 
+    }
+    //up
+    if ((you.body[0].y+1 == you.body[i].y) && (you.body[0].x == you.body[i].x)){
+      isMoveSafe.up = false; 
+    }
+  }
+  
+  return isMoveSafe;
 }
 
 export function avoidOtherSnakes(board, you, isMoveSafe){
   // TODO: Step 3 - Prevent your Battlesnake from colliding with other Battlesnakes
   // opponents = gameState.board.snakes;
-  return isMoveSafe
+  for (let i = 0; i < board.snakes.length; i++){
+    for(let j = 0; j < board.snakes[i].length; j++){
+      //check if the head can move to the left 
+      if ((you.body[0].x-1 == board.snakes[i].body[j].x) 
+        && (you.body[0].y == board.snakes[i].body[j].y)){
+        isMoveSafe.left = false;
+      }
+      //check if the head can move to the right
+      if ((you.body[0].x+1 == board.snakes[i].body[j].x)
+      && (you.body[0].y == board.snakes[i].body[j].y)){
+        isMoveSafe.right = false;
+      }
+      ////check if the head can move down
+      if ((you.body[0].y-1 == board.snakes[i].body[j].y)
+          && (you.body[0].x == board.snakes[i].body[j].x)){
+        isMoveSafe.down = false;
+      }
+      ////check if the head can move up
+      if ((you.body[0].y+1 == board.snakes[i].body[j].y)
+          && (you.body[0].x == board.snakes[i].body[j].x)){
+        isMoveSafe.up = false;
+      }
+    }
+  }
+  return isMoveSafe;
 }
