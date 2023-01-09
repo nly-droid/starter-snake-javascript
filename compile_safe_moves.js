@@ -60,16 +60,16 @@ export function avoidYourself(board, you, isMoveSafe) {
   for(let i=0; i<myBody.length; i++){
     let bodypart=myBody[i];
     // Up
-    if(myHead.x==bodypart.x && myHead.y+1==bodypart.y)
+    if(myHead.x == bodypart.x && myHead.y+1 == bodypart.y)
     {
       isMoveSafe.up = false;
     }
     // Left
-    else if(myHead.x-1==bodypart.x && myHead.y==bodypart.y){
+    else if(myHead.x-1 == bodypart.x && myHead.y == bodypart.y){
        isMoveSafe.left = false;
     }
     // Down
-    else if(myHead.x=bodypart.x && myHead.y+1==bodypart.y){
+    else if(myHead.x == bodypart.x && myHead.y-1 == bodypart.y){
        isMoveSafe.down = false;
     }
   }
