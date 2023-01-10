@@ -1,50 +1,46 @@
-export default function compileOptimalMoves(board, you, moves) {
-  moves = findFood(board, you, moves);
-  return moves;
+export default function compileOptimalMoves(board, you, weightedMoves) {
+  let move = null;
+  move = findFood(board, you, weightedMoves);
+  return move;
 }
 
 
-function findFood(board, you, moves) {
-  // Step 4 - Move towards food instead of random, to regain health and survive longer
-  let myHead = you.body[0];
+function findFood(board, you, weightedMoves) {
 
-  let minDirection = new Array();
+  const safeMoves = Object.keys(weightedMoves);
+  
+  let food = board.food;
+  // get the distance from all the food to all the snakes 
+  let minFood = null;
   let minDistance = board.width + board.height + 1;
 
-  for (let i = 0; i < board.food.length; i++) {
-    let food = board.food[i];
+  // get the shortest distance
+  for (let i = 0; i< board.food.length; i++){
+      //(x1-x2)+(y1-y2) in abs values 
+    let distance = Math.abs(you.head.x - food[i].x) + Math.abs(you.head.y - food[i].y);
 
-    let xDistance = food.x - myHead.x;
-    let yDistance = food.y - myHead.y;
-    let distance = Math.abs(xDistance) + Math.abs(yDistance);
-
-    if (distance < minDistance) {
-      let direction = new Array();
-      if (xDistance > 0) {
-        direction.push("right");
-      }
-  
-      if (xDistance < 0) {
-        direction.push("left");
-      }
-  
-      if (yDistance > 0) {
-        direction.push("up");
-      }
-  
-      if (yDistance < 0) {
-        direction.push("down");
-      }
-
-      minDirection = moves.filter(i => new Set(direction).has(i));
+    if(distance < minDistance){
+      minDistance = distance; 
+      minFood = food[i];
     }
   }
 
-  if (minDirection.length > 0){
-    moves = minDirection;
+  if (minFood != null){
+    for(let i = 0; i < safeMoves.length; i++){
+      if(safeMoves[i] == "right" && you.head.x < minFood.x){
+        return safeMoves[i];
+      }
+        if(safeMoves[i] == "left" && you.head.x > minFood.x){
+        return safeMoves[i];
+      }
+        if(safeMoves[i] == "up" && you.head.y < minFood.y){
+        return safeMoves[i];
+      }
+        if(safeMoves[i] == "down" && you.head.y > minFood.y){
+        return safeMoves[i];
+      }
+    }
   }
-
-  console.log(moves);
-
-  return moves
+  
+  return null;
 }

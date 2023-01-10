@@ -54,22 +54,31 @@ function move(gameState) {
   let board = gameState.board;
   let you = gameState.you;
 
+  // Compile safe moves
   isMoveSafe = compileSafeMoves(board, you, isMoveSafe);
 
-  // Are there any safe moves left?
   const safeMoves = Object.keys(isMoveSafe).filter(key => isMoveSafe[key]);
+
   if (safeMoves.length == 0) {
     console.log(`MOVE ${gameState.turn}: No safe moves detected! Moving down`);
     return { move: "down" };
   }
 
-  let moves = compileOptimalMoves(board, you, safeMoves);
+  // Compile optimal moves
+  let weightedMoves = {};
+  for (let safeMove of safeMoves){
+    weightedMoves[safeMove] = 0;
+  }
 
-  // Choose a random move from the safe moves
-  const nextMove = moves[Math.floor(Math.random() * moves.length)];
+  let nextMove = compileOptimalMoves(board, you, weightedMoves);
+
+  if (nextMove == null){
+    // Choose a random move from the safe moves if there are no optimal moves
+    nextMove = safeMoves[Math.floor(Math.random() * safeMoves.length)];
+  }
 
   console.log(`MOVE ${gameState.turn}: ${nextMove}`)
-  return { move: nextMove };
+  return { move: nextMove }; 
 }
 
 runServer({
