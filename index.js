@@ -13,6 +13,7 @@
 import runServer from './server.js';
 import compileSafeMoves from './compile_safe_moves.js';
 import compileOptimalMoves from './compile_optimal_moves.js';
+import calculateStats from './calculate_stats.js';
 
 // info is called when you create your Battlesnake on play.battlesnake.com
 // and controls your Battlesnake's appearance
@@ -44,6 +45,9 @@ function end(gameState) {
 // See https://docs.battlesnake.com/api/example-move for available data
 function move(gameState) {
 
+  // Calculate stats
+  gameState = calculateStats(gameState);
+
   let isMoveSafe = {
     up: true,
     down: true,
@@ -70,7 +74,8 @@ function move(gameState) {
     weightedMoves[safeMove] = 0;
   }
 
-  let nextMove = compileOptimalMoves(board, you, weightedMoves);
+  let nextMove = null;
+  nextMove = compileOptimalMoves(board, you, weightedMoves);
 
   if (nextMove == null){
     // Choose a random move from the safe moves if there are no optimal moves

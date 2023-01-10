@@ -58,7 +58,7 @@ function avoidWalls(board, you, isMoveSafe) {
 
 function avoidYourself(board, you, isMoveSafe) {
   // TODO: Step 2 - Prevent your Battlesnake from colliding with itself
-  for(let i = 3; i < you.body.length -1; i++){
+  for(let i = 0; i < you.body.length - 1; i++){
     //for each body parts, check the four positions 
     //your body is at the right of your head 
     if ((you.body[0].x-1 == you.body[i].x) && (you.body[0].y == you.body[i].y)){
@@ -77,6 +77,8 @@ function avoidYourself(board, you, isMoveSafe) {
       isMoveSafe.up = false; 
     }
   }
+
+  console.log(you.body.length - 1);
   
   return isMoveSafe;
 }
