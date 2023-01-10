@@ -12,6 +12,7 @@
 
 import runServer from './server.js';
 import { avoidMovingBackwards, avoidWalls, avoidYourself,avoidOtherSnakes } from './compile_safe_moves.js';
+import { findFood } from './compile_optimal_moves.js';
 
 // info is called when you create your Battlesnake on play.battlesnake.com
 // and controls your Battlesnake's appearance
@@ -66,10 +67,14 @@ function move(gameState) {
   }
 
   // Choose a random move from the safe moves
-  const nextMove = safeMoves[Math.floor(Math.random() * safeMoves.length)];
+ 
+
+  const nextMove = findFood(board,you,safeMoves);
 
   console.log(`MOVE ${gameState.turn}: ${nextMove}`)
   return { move: nextMove };
+
+  
 }
 
 runServer({
