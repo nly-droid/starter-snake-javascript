@@ -1,4 +1,12 @@
-export function avoidMovingBackwards(board, you, isMoveSafe) {
+export default function compileSafeMoves(board, you, isMoveSafe) {
+  isMoveSafe = avoidMovingBackwards(board, you, isMoveSafe);
+  isMoveSafe = avoidWalls(board, you, isMoveSafe);
+  isMoveSafe = avoidYourself(board, you, isMoveSafe);
+  isMoveSafe = avoidOtherSnakes(board, you, isMoveSafe);
+  return isMoveSafe
+}
+
+function avoidMovingBackwards(board, you, isMoveSafe) {
   // We've included code to prevent your Battlesnake from moving backwards
   const myHead = you.body[0];
   const myNeck = you.body[1];
@@ -20,8 +28,8 @@ export function avoidMovingBackwards(board, you, isMoveSafe) {
   return isMoveSafe;
 }
 
-export function avoidWalls(board, you, isMoveSafe) {
-    // TODO: Step 1 - Prevent your Battlesnake from moving out of bounds
+function avoidWalls(board, you, isMoveSafe) {
+  // TODO: Step 1 - Prevent your Battlesnake from moving out of bounds
   // boardWidth = gameState.board.width;
   // boardHeight = gameState.board.height;
   let boardWidth = board.width;
@@ -29,30 +37,28 @@ export function avoidWalls(board, you, isMoveSafe) {
 
   let myHead = you.body[0];  // Coordinates of your head
 
-  if (myHead.x == boardWidth - 1){
+  if (myHead.x == boardWidth - 1) {
     isMoveSafe.right = false;
   }
-  
+
   if (myHead.x == 0) {
     isMoveSafe.left = false;
   }
 
-  if (myHead.y == boardHeight - 1){
+  if (myHead.y == boardHeight - 1) {
     isMoveSafe.up = false;
   }
 
-  if (myHead.y == 0){
+  if (myHead.y == 0) {
     isMoveSafe.down = false;
   }
 
   return isMoveSafe;
 }
 
-export function avoidYourself(board, you, isMoveSafe){
+function avoidYourself(board, you, isMoveSafe) {
   // TODO: Step 2 - Prevent your Battlesnake from colliding with itself
-
-  //use a for loop i=3
-  for(let i = 3; i < you.body.length -1; i++){
+  for(let i = 0; i < you.body.length - 1; i++){
     //for each body parts, check the four positions 
     //your body is at the right of your head 
     if ((you.body[0].x-1 == you.body[i].x) && (you.body[0].y == you.body[i].y)){
@@ -75,9 +81,8 @@ export function avoidYourself(board, you, isMoveSafe){
   return isMoveSafe;
 }
 
-export function avoidOtherSnakes(board, you, isMoveSafe){
+function avoidOtherSnakes(board, you, isMoveSafe) {
   // TODO: Step 3 - Prevent your Battlesnake from colliding with other Battlesnakes
-  // opponents = gameState.board.snakes;
   for (let i = 0; i < board.snakes.length; i++){
     for(let j = 0; j < board.snakes[i].length; j++){
       //check if the head can move to the left 

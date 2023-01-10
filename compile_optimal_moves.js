@@ -1,39 +1,57 @@
-  // TODO: Step 4 - Move towards food instead of random, to regain health and survive longer
-  // food = gameState.board.food;
-export function findFood(board, you, safeMoves){
-  
-  let food = board.food;
-  //get the distance from all the food to all the snakes 
-  //
-  let snakehealth = you.health;
-  if(food.length > 0 && snakehealth < 50){
-  let minDistance = Math.abs(you.head.x - food[0].x) + Math.abs(you.head.y - food[0].y);
-  let minFood = food[0];
-  for(let i = 1; i< board.food.length; i++){
-      //(x1-x2)+(y1-y2) in abs values 
-    let distance = Math.abs(you.head.x - food[i].x) + Math.abs(you.head.y - food[i].y);
+export default function compileOptimalMoves(board, you, weightedMoves) {
+  let nextMove = null;
 
-    if(distance < minDistance){
-      minDistance = distance; 
-      minFood = food[i];
+  if ("hunger" in you){
+      weightedMoves = findFood(board, you, weightedMoves);
+  }
+
+  console.log(weightedMoves);
+
+  let highestWeight = Number.MIN_SAFE_INTEGER;
+  // Get the move with the highest weight
+  for (let move of Object.keys(weightedMoves)){
+    if (weightedMoves[move] > highestWeight){
+      nextMove = move;
+      highestWeight = weightedMoves[move];
     }
   }
+  console.log(nextMove);
+  
+  return nextMove;
+}
 
-//
-  for(let i = 0; i < safeMoves.length; i++){
-  if(safeMoves[i] == "right" && you.head.x < minFood.x){
-    return safeMoves[i];
+
+function findFood(board, you, weightedMoves) {
+  
+  let food = board.food;
+  // get the distance from all the food to all the snakes 
+  for (let i = 0; i< board.food.length; i++){
+      //(x1-x2)+(y1-y2) in abs values 
+    let distance = Math.abs(you.head.x - food[i].x) + Math.abs(you.head.y - food[i].y);
+    let directions = new Array();
+    
+    if (you.head.x < food[i].x){
+      directions.push("right");
+    }
+
+    if (you.head.x > food[i].x){
+      directions.push("left");
+    }
+
+    if (you.head.y < food[i].y){
+      directions.push("up");
+    }
+
+    if (you.head.y > food[i].y){
+      directions.push("down");
+    }
+
+    for (let direction of directions){
+      if (direction in weightedMoves){
+        weightedMoves[direction] += you.hunger * 1/distance;
+      }
+    }
   }
-    if(safeMoves[i] == "left" && you.head.x > minFood.x){
-    return safeMoves[i];
-  }
-    if(safeMoves[i] == "up" && you.head.y < minFood.y){
-    return safeMoves[i];
-  }
-    if(safeMoves[i] == "down" && you.head.y > minFood.y){
-    return safeMoves[i];
-  }
-  }
-  }
-  return safeMoves[Math.floor(Math.random() * safeMoves.length)];
+  
+  return weightedMoves;
 }

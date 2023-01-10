@@ -11,8 +11,9 @@
 // For more info see docs.battlesnake.com
 
 import runServer from './server.js';
-import { avoidMovingBackwards, avoidWalls, avoidYourself,avoidOtherSnakes } from './compile_safe_moves.js';
-import { findFood } from './compile_optimal_moves.js';
+import compileSafeMoves from './compile_safe_moves.js';
+import compileOptimalMoves from './compile_optimal_moves.js';
+import calculateStats from './calculate_stats.js';
 
 // info is called when you create your Battlesnake on play.battlesnake.com
 // and controls your Battlesnake's appearance
@@ -44,6 +45,9 @@ function end(gameState) {
 // See https://docs.battlesnake.com/api/example-move for available data
 function move(gameState) {
 
+  // Calculate stats
+  gameState = calculateStats(gameState);
+
   let isMoveSafe = {
     up: true,
     down: true,
@@ -54,27 +58,32 @@ function move(gameState) {
   let board = gameState.board;
   let you = gameState.you;
 
-  isMoveSafe = avoidMovingBackwards(board, you, isMoveSafe);
-  isMoveSafe = avoidWalls(board, you, isMoveSafe);
-  isMoveSafe = avoidYourself(board, you, isMoveSafe);
-  isMoveSafe = avoidOtherSnakes(board, you, isMoveSafe);
+  // Compile safe moves
+  isMoveSafe = compileSafeMoves(board, you, isMoveSafe);
 
-  // Are there any safe moves left?
   const safeMoves = Object.keys(isMoveSafe).filter(key => isMoveSafe[key]);
+
   if (safeMoves.length == 0) {
     console.log(`MOVE ${gameState.turn}: No safe moves detected! Moving down`);
     return { move: "down" };
   }
 
-  // Choose a random move from the safe moves
- 
+  // Compile optimal moves
+  let weightedMoves = {};
+  for (let safeMove of safeMoves){
+    weightedMoves[safeMove] = 0;
+  }
 
-  const nextMove = findFood(board,you,safeMoves);
+  let nextMove = null;
+  nextMove = compileOptimalMoves(board, you, weightedMoves);
+
+  if (nextMove == null){
+    // Choose a random move from the safe moves if there are no optimal moves
+    nextMove = safeMoves[Math.floor(Math.random() * safeMoves.length)];
+  }
 
   console.log(`MOVE ${gameState.turn}: ${nextMove}`)
-  return { move: nextMove };
-
-  
+  return { move: nextMove }; 
 }
 
 runServer({
