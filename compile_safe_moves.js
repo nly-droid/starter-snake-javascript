@@ -77,8 +77,6 @@ function avoidYourself(board, you, isMoveSafe) {
       isMoveSafe.up = false; 
     }
   }
-
-  console.log(you.body.length - 1);
   
   return isMoveSafe;
 }
