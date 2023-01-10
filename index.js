@@ -12,6 +12,7 @@
 
 import runServer from './server.js';
 import compileSafeMoves from './compile_safe_moves.js';
+import compileOptimalMoves from './compile_optimal_moves.js';
 
 // info is called when you create your Battlesnake on play.battlesnake.com
 // and controls your Battlesnake's appearance
@@ -57,14 +58,15 @@ function move(gameState) {
 
   // Are there any safe moves left?
   const safeMoves = Object.keys(isMoveSafe).filter(key => isMoveSafe[key]);
-  console.log(safeMoves)
   if (safeMoves.length == 0) {
     console.log(`MOVE ${gameState.turn}: No safe moves detected! Moving down`);
     return { move: "down" };
   }
 
+  let moves = compileOptimalMoves(board, you, safeMoves);
+
   // Choose a random move from the safe moves
-  const nextMove = safeMoves[Math.floor(Math.random() * safeMoves.length)];
+  const nextMove = moves[Math.floor(Math.random() * moves.length)];
 
   console.log(`MOVE ${gameState.turn}: ${nextMove}`)
   return { move: nextMove };
