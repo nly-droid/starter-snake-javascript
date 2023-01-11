@@ -4,7 +4,10 @@ export default function compileOptimalMoves(board, you, weightedMoves) {
   if ("hunger" in you){
       weightedMoves = findFood(board, you, weightedMoves);
   }
-
+  weightedMoves = avoidHeadCollison(board, you, weightedMoves);
+  if(Object.keys(weightedMoves).length == 1){
+    return weightedMoves[0];
+  }
   console.log(weightedMoves);
 
   let highestWeight = Number.MIN_SAFE_INTEGER;
@@ -16,13 +19,103 @@ export default function compileOptimalMoves(board, you, weightedMoves) {
     }
   }
   console.log(nextMove);
+
+  
   
   return nextMove;
 }
 
+//add a function to avoid head to head collison 
+function avoidHeadCollison(board, you, weightedMoves){
+  //for each weighted move, check if there is a snake head 
+  for(let move of Object.keys(weightedMoves)){
+    if (move == "left"){
+      for(let j = 0; j < board.snakes.length; j++){
+      //ignore myself in this 
+      if(you.id != board.snakes[j].id && you.length <= board.snakes[j].length){
+        //check if there is other snake parts around me
+        if(board.snakes[j].head.x+2 == you.head.x && 
+          board.snakes[j].head.y == you.head.y){
+          delete weightedMoves["left"];
+        }
+        else if(board.snakes[j].head.x+1 == you.head.x && 
+          board.snakes[j].head.y-1 == you.head.y){
+          delete weightedMoves["left"];
+        }
+        else if(board.snakes[j].head.x+1 == you.head.x && 
+          board.snakes[j].head.y+1 == you.head.y){
+          delete weightedMoves["left"];
+        }
+        }
+      }
+    }
+    if (move == "right"){
+      for(let j = 0; j < board.snakes.length; j++){
+      //ignore myself in this 
+      if(you.id != board.snakes[j].id && you.length <= board.snakes[j].length){
+        //check if there is other snake parts around me
+        if(board.snakes[j].head.x-2 == you.head.x && 
+          board.snakes[j].head.y == you.head.y){
+          delete weightedMoves["right"];
+        }
+        else if(board.snakes[j].head.x-1 == you.head.x && 
+          board.snakes[j].head.y-1 == you.head.y){
+          delete weightedMoves["right"];
+        }
+        else if(board.snakes[j].head.x-1 == you.head.x && 
+          board.snakes[j].head.y+1 == you.head.y){
+          delete weightedMoves["right"];
+        }
+        }
+      }
+    }
+
+    if (move == "up"){
+      for(let j = 0; j < board.snakes.length; j++){
+      //ignore myself in this 
+      if(you.id != board.snakes[j].id && you.length <= board.snakes[j].length){
+        //check if there is other snake parts around me
+        if(board.snakes[j].head.x == you.head.x && 
+          board.snakes[j].head.y-2 == you.head.y){
+          delete weightedMoves["up"];
+        }
+        else if(board.snakes[j].head.x-1 == you.head.x && 
+          board.snakes[j].head.y-1 == you.head.y){
+         delete weightedMoves["up"];
+        }
+        else if(board.snakes[j].head.x+1 == you.head.x && 
+          board.snakes[j].head.y-1 == you.head.y){
+          delete weightedMoves["up"];
+        }
+        }
+      }
+    }
+    if (move == "down"){
+      for(let j = 0; j < board.snakes.length; j++){
+      //ignore myself in this 
+      if(you.id != board.snakes[j].id && you.length <= board.snakes[j].length){
+        //check if there is other snake parts around me
+        if(board.snakes[j].head.x == you.head.x && 
+          board.snakes[j].head.y+2 == you.head.y){
+          delete weightedMoves["down"];
+        }
+        else if(board.snakes[j].head.x-1 == you.head.x && 
+          board.snakes[j].head.y+1 == you.head.y){
+          delete weightedMoves["down"];
+        }
+        else if(board.snakes[j].head.x+1 == you.head.x && 
+          board.snakes[j].head.y+1 == you.head.y){
+          delete weightedMoves["down"];
+        }
+        }
+      }
+    }
+  }
+  return weightedMoves;  
+}
 
 function findFood(board, you, weightedMoves) {
-  
+
   let food = board.food;
   // get the distance from all the food to all the snakes 
   for (let i = 0; i< board.food.length; i++){
