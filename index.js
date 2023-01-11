@@ -67,6 +67,12 @@ function move(gameState) {
     console.log(`MOVE ${gameState.turn}: No safe moves detected! Moving down`);
     return { move: "down" };
   }
+  //check for if there is one safe move 
+  if (safeMoves.length == 1){
+    console.log(`MOVE ${gameState.turn}:One safe move detected! Moving
+    safely!`);
+    return {move: safeMoves[0]}
+  }
 
   // Compile optimal moves
   let weightedMoves = {};

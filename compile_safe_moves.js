@@ -84,7 +84,7 @@ function avoidYourself(board, you, isMoveSafe) {
 function avoidOtherSnakes(board, you, isMoveSafe) {
   // TODO: Step 3 - Prevent your Battlesnake from colliding with other Battlesnakes
   for (let i = 0; i < board.snakes.length; i++){
-    for(let j = 0; j < board.snakes[i].length; j++){
+    for(let j = 0; j < board.snakes[i].length - 1; j++){
       //check if the head can move to the left 
       if ((you.body[0].x-1 == board.snakes[i].body[j].x) 
         && (you.body[0].y == board.snakes[i].body[j].y)){
