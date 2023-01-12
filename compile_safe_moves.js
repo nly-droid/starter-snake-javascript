@@ -7,7 +7,6 @@ export default function compileSafeMoves(board, you) {
   };
   isMoveSafe = avoidMovingBackwards(board, you, isMoveSafe);
   isMoveSafe = avoidWalls(board, you, isMoveSafe);
-  isMoveSafe = avoidYourself(board, you, isMoveSafe);
   isMoveSafe = avoidOtherSnakes(board, you, isMoveSafe);
 
   const safeMoves = Object.keys(isMoveSafe).filter(key => isMoveSafe[key]);
@@ -61,31 +60,6 @@ function avoidWalls(board, you, isMoveSafe) {
     isMoveSafe.down = false;
   }
 
-  return isMoveSafe;
-}
-
-function avoidYourself(board, you, isMoveSafe) {
-  // TODO: Step 2 - Prevent your Battlesnake from colliding with itself
-  for(let i = 0; i < you.body.length - 1; i++){
-    //for each body parts, check the four positions 
-    //your body is at the right of your head 
-    if ((you.body[0].x-1 == you.body[i].x) && (you.body[0].y == you.body[i].y)){
-      isMoveSafe.left = false; 
-    }
-    //right
-    if ((you.body[0].x+1 == you.body[i].x) && (you.body[0].y == you.body[i].y)){
-      isMoveSafe.right = false; 
-    }
-    //down
-    if ((you.body[0].y-1 == you.body[i].y) && (you.body[0].x == you.body[i].x)){
-      isMoveSafe.down = false; 
-    }
-    //up
-    if ((you.body[0].y+1 == you.body[i].y) && (you.body[0].x == you.body[i].x)){
-      isMoveSafe.up = false; 
-    }
-  }
-  
   return isMoveSafe;
 }
 

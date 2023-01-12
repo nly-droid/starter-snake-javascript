@@ -22,6 +22,7 @@ export default function runSimulation(items, you, board, safeMoves){
       turn += 1;
     }
     item.push(turn);
+    console.log(modifiedYou);
   }
   
   for (let item of items){
