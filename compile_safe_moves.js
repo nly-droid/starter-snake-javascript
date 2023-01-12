@@ -1,16 +1,24 @@
-export default function compileSafeMoves(board, you, isMoveSafe) {
+export default function compileSafeMoves(board, you) {
+  let isMoveSafe = {
+    up: true,
+    down: true,
+    left: true,
+    right: true
+  };
   isMoveSafe = avoidMovingBackwards(board, you, isMoveSafe);
   isMoveSafe = avoidWalls(board, you, isMoveSafe);
   isMoveSafe = avoidYourself(board, you, isMoveSafe);
   isMoveSafe = avoidOtherSnakes(board, you, isMoveSafe);
-  return isMoveSafe
+
+  const safeMoves = Object.keys(isMoveSafe).filter(key => isMoveSafe[key]);
+  
+  return safeMoves;
 }
 
 function avoidMovingBackwards(board, you, isMoveSafe) {
   // We've included code to prevent your Battlesnake from moving backwards
   const myHead = you.body[0];
   const myNeck = you.body[1];
-  
 
   if (myNeck.x < myHead.x) {        // Neck is left of head, don't move left
     isMoveSafe.left = false;

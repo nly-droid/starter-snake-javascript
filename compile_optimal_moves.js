@@ -1,26 +1,42 @@
 import compileSafeMoves from './compile_safe_moves.js';
-export default function compileOptimalMoves(board, you, weightedMoves) {
+import runSimulation from './run_simulation.js';
+
+export default function compileOptimalMoves(board, you, safeMoves, simulated=false) {
+  let weightedMoves = {};
+  for (let safeMove of safeMoves){
+    weightedMoves[safeMove] = 0;
+  }
+  
   let nextMove = null;
 
   if ("hunger" in you){
       weightedMoves = findFood(board, you, weightedMoves);
   }
   weightedMoves = avoidHeadCollison(board, you, weightedMoves);
-  console.log(weightedMoves);
 
-  let highestWeight = Number.MIN_SAFE_INTEGER;
-  // Get the move with the highest weight
-  for (let move of Object.keys(weightedMoves)){
-    if (weightedMoves[move] > highestWeight){
-      nextMove = move;
-      highestWeight = weightedMoves[move];
-    }
+  // Create items array
+  var items = Object.keys(weightedMoves).map(function(key) {
+    return [key, weightedMoves[key]];
+  });
+
+  // Sort the array based on the second element (value)
+  items.sort(function(first, second) {
+    return second[1] - first[1];
+  });
+
+  // Run simulation if we are not in the simulation.
+  if (!simulated){
+    items = runSimulation(items, you, board, safeMoves);
   }
 
-  
-  console.log(nextMove);
+  if (items[0] != undefined){
+    nextMove = items[0][0];
+  }
 
-  
+  if (!simulated){
+    console.log(items);
+    console.log(nextMove);
+  }
   
   return nextMove;
 }
