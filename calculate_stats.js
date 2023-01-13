@@ -27,21 +27,13 @@ function calculateHunger(gameState){
   if ("optimalMaxLength" in gameState.board && "dangerHealth" in gameState.you){
     let healthDiff = (you.health - you.dangerHealth);
     let bodyDiff = (board.optimalMaxLength - you.body.length);
-    let bodyPenalty = Math.pow(Math.abs(Math.min(0, bodyDiff)),3.5);
     let healthBoost = Math.pow(Math.abs(Math.min(0, healthDiff)),2);
-    hunger = healthDiff + bodyDiff - bodyPenalty + healthBoost;
+    hunger = 300;
   }
 
   return hunger;
 }
 
 function calculateCentralUrgency(gameState){
-  let you = gameState.you;
-  let board = gameState.board;
-  if ("optimalMaxLength" in gameState.board){
-    let bodyDiff = (board.optimalMaxLength - you.body.length);
-    let bodyPenalty = Math.pow(Math.abs(Math.min(0, bodyDiff)), 3);
-    return bodyPenalty;
-  }
   return 100;
 }

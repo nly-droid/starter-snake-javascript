@@ -139,15 +139,17 @@ function findFood(board, you, weightedMoves) {
 function avoidEdge(board, you, weightedMoves){
   //store the values of the safe coordinates 
   //right x coordinates 
-  let x2 = Math.ceil(board.width * 2/3) - 1;
+  let x2 = board.width - 2;
   //left x coordinates 
-  let x1 = Math.ceil(board.width - x2);
+  let x1 = 2;
   //upper y coordinates 
-  let y2 = Math.ceil(board.height * 2/3) - 1;
+  let y2 = board.height - 2;
   //lower y coordinates 
-  let y1 = Math.ceil(board.height - y2);
+  let y1 = 2;
 
-  if (you.x >= x1 && you.x <= x2 && you.y >= y1 && you.y <= y2){
+
+  if (you.head.x < x1 || you.head.x > x2 || you.head.y < y1 || you.head.y > y2){
+      console.log("central", you.centralUrgency);
       let moveTowardsedge = [{"x": x1, "y": y1}, {"x": x2, "y": y1}, {"x": x1, "y": y2}, {"x": x2, "y": y2}];
       weightedMoves = findTarget(you, weightedMoves, you.centralUrgency, moveTowardsedge);
   }
@@ -157,8 +159,6 @@ function avoidEdge(board, you, weightedMoves){
 }
 
 function findTarget(you, weightedMoves, urgency, array){
-  console.log(array);
-  console.log(array.length);
   for (let i = 0; i < array.length; i++){
       //(x1-x2)+(y1-y2) in abs values 
     let distance = Math.abs(you.head.x - array[i].x) + Math.abs(you.head.y - array[i].y);
