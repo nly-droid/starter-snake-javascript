@@ -16,6 +16,7 @@ function calculateBoardStats(gameState) {
 function calculateYourStats(gameState){
   gameState.you["dangerHealth"] = MAX_HEALTH * 1/3;
   gameState.you["hunger"] = calculateHunger(gameState);
+  gameState.you["centralUrgency"] = calculateCentralUrgency(gameState);
   return gameState;
 }
 
@@ -32,4 +33,15 @@ function calculateHunger(gameState){
   }
 
   return hunger;
+}
+
+function calculateCentralUrgency(gameState){
+  let you = gameState.you;
+  let board = gameState.board;
+  if ("optimalMaxLength" in gameState.board){
+    let bodyDiff = (board.optimalMaxLength - you.body.length);
+    let bodyPenalty = Math.pow(Math.abs(Math.min(0, bodyDiff)), 3);
+    return bodyPenalty;
+  }
+  return 100;
 }

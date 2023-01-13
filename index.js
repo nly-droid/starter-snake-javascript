@@ -24,7 +24,7 @@ function info() {
   return {
     apiversion: "1",
     author: "",       // TODO: Your Battlesnake Username
-    color: "#888888", // TODO: Choose color
+    color: "#ba34eb", // TODO: Choose color
     head: "default",  // TODO: Choose head
     tail: "default",  // TODO: Choose tail
   };
