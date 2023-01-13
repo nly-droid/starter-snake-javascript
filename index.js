@@ -25,8 +25,8 @@ function info() {
     apiversion: "1",
     author: "",       // TODO: Your Battlesnake Username
     color: "#4f9f96", // TODO: Choose color
-    head: "do-sammy",  // TODO: Choose head
-    tail: "do-sammy",  // TODO: Choose tail
+    head: "whale",  // TODO: Choose head
+    tail: "fish",  // TODO: Choose tail
   };
 }
 
@@ -50,6 +50,7 @@ function move(gameState) {
 
   let board = gameState.board;
   let you = gameState.you;
+  let turn = gameState.turn;
 
   // Compile safe moves
   let safeMoves = compileSafeMoves(board, you);
@@ -60,15 +61,14 @@ function move(gameState) {
   }
   //check for if there is one safe move 
   if (safeMoves.length == 1){
-    console.log(`MOVE ${gameState.turn}:One safe move detected! Moving
-    safely!`);
+    console.log(`MOVE ${gameState.turn}: One safe move ${safeMoves[0]} detected! Moving safely!`);
     return {move: safeMoves[0]}
   }
 
   // Compile optimal moves
 
   let nextMove = null;
-  nextMove = compileOptimalMoves(board, you, safeMoves);
+  nextMove = compileOptimalMoves(board, you, turn, safeMoves);
 
   if (nextMove == null){
     // Choose a random move from the safe moves if there are no optimal moves

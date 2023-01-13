@@ -9,12 +9,12 @@ export default function calculateStats(gameState) {
 
 function calculateBoardStats(gameState) {
   let board = gameState.board;
-  gameState.board["optimalMaxLength"] = (board.width * board.height)*1/10;
+  gameState.board["optimalMaxLength"] = (board.width * board.height)*1/5;
   return gameState;
 }
 
 function calculateYourStats(gameState){
-  gameState.you["dangerHealth"] = MAX_HEALTH * 1/3;
+  gameState.you["dangerHealth"] = MAX_HEALTH * 1/2;
   gameState.you["hunger"] = calculateHunger(gameState);
   return gameState;
 }

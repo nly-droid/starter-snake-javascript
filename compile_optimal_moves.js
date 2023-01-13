@@ -1,7 +1,7 @@
 import compileSafeMoves from './compile_safe_moves.js';
 import runSimulation from './run_simulation.js';
 
-export default function compileOptimalMoves(board, you, safeMoves, simulated=false) {
+export default function compileOptimalMoves(board, you, turn, safeMoves, simulated=false) {
   let weightedMoves = {};
   for (let safeMove of safeMoves){
     weightedMoves[safeMove] = 0;
@@ -9,10 +9,10 @@ export default function compileOptimalMoves(board, you, safeMoves, simulated=fal
   
   let nextMove = null;
 
+  weightedMoves = avoidHeadCollison(board, you, weightedMoves);
   if ("hunger" in you){
       weightedMoves = findFood(board, you, weightedMoves);
   }
-  weightedMoves = avoidHeadCollison(board, you, weightedMoves);
 
   // Create items array
   var items = Object.keys(weightedMoves).map(function(key) {
@@ -26,7 +26,7 @@ export default function compileOptimalMoves(board, you, safeMoves, simulated=fal
 
   // Run simulation if we are not in the simulation.
   if (!simulated){
-    items = runSimulation(items, you, board, safeMoves);
+    items = runSimulation(items, you, board, turn, safeMoves);
   }
 
   if (items[0] != undefined){
@@ -42,7 +42,7 @@ export default function compileOptimalMoves(board, you, safeMoves, simulated=fal
 }
 
 //add a function to avoid head to head collison 
-function avoidHeadCollison(board, you, weightedMoves){
+function avoidHeadCollison(board, you, weightedMoves, collisionCount){
   //for each weighted move, check if there is a snake head 
   for(let move of Object.keys(weightedMoves)){
     if (move == "left"){
