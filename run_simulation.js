@@ -126,6 +126,7 @@ function simulateSnake(modifiedYou, modifiedBoard, move){
     modifiedYou.body.unshift(moveTiles[move]);
     modifiedYou.head = moveTiles[move];
 
+
     let eatFood = false;
     for (let i = 0; i < modifiedBoard.food.length; i++){
       let food = modifiedBoard.food[i];
@@ -138,6 +139,9 @@ function simulateSnake(modifiedYou, modifiedBoard, move){
 
     if (!eatFood){
       modifiedYou.body.pop();
+      if (modifiedYou.health == 0){
+        return null;
+      }
     }
   }
   else {
