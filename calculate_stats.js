@@ -1,34 +1,38 @@
 const MAX_HEALTH = 100;
 
 export default function calculateStats(gameState) {
-  gameState = calculateBoardStats(gameState);
-  gameState = calculateYourStats(gameState);
+  gameState.board = calculateBoardStats(gameState.board);
+  gameState.you = calculateYourStats(gameState.you, gameState.board);
   
   return gameState;
 }
 
-function calculateBoardStats(gameState) {
-  let board = gameState.board;
-  gameState.board["optimalMaxLength"] = (board.width * board.height)*1/5;
-  return gameState;
+export function calculateBoardStats(board) {
+  board["optimalMaxLength"] = Math.ceil(board.width * 1.75);
+  let longest = board.snakes[0].body.length;
+  for (let i = 0; i < board.snakes.length; i++){
+    board.snakes[i]["hunger"] = calculateHunger(board.snakes[i], board);
+    if (board.snakes[i].body.length > longest){
+      longest = board.snakes[i].body.length;
+    }
+  }
+  board["longestSnakeLength"] = longest;
+  return board;
 }
 
-function calculateYourStats(gameState){
-  gameState.you["dangerHealth"] = MAX_HEALTH * 1/2;
-  gameState.you["hunger"] = calculateHunger(gameState);
-  return gameState;
+export function calculateYourStats(you, board){
+  you["hunger"] = calculateHunger(you, board);
+  return you;
 }
 
-function calculateHunger(gameState){
+function calculateHunger(you, board){
   let hunger = 0;
-  let you = gameState.you;
-  let board = gameState.board;
-  if ("optimalMaxLength" in gameState.board && "dangerHealth" in gameState.you){
-    let healthDiff = (you.health - you.dangerHealth);
+  if ("optimalMaxLength" in board){
+    let healthDiff = you.health - MAX_HEALTH * 1/3;
     let bodyDiff = (board.optimalMaxLength - you.body.length);
-    let bodyPenalty = Math.pow(Math.abs(Math.min(0, bodyDiff)),3.5);
-    let healthBoost = Math.pow(Math.abs(Math.min(0, healthDiff)),2);
-    hunger = healthDiff + bodyDiff - bodyPenalty + healthBoost;
+    let bodyPenalty = Math.pow(Math.abs(Math.min(0, bodyDiff)),2);
+    let healthBoost = Math.pow(Math.abs(Math.min(0, healthDiff)),3);
+    hunger = 1/healthDiff * bodyDiff - bodyPenalty + healthBoost;
   }
   return hunger;
 }

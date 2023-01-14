@@ -1,17 +1,27 @@
-import compileSafeMoves from './compile_safe_moves.js';
 import runSimulation from './run_simulation.js';
 
 export default function compileOptimalMoves(board, you, turn, safeMoves, simulated=false) {
+
   let weightedMoves = {};
+  let collisionCount = 0;
+  
   for (let safeMove of safeMoves){
     weightedMoves[safeMove] = 0;
   }
   
   let nextMove = null;
 
-  weightedMoves = avoidHeadCollison(board, you, weightedMoves);
+  if (!simulated){
+    weightedMoves = avoidHeadCollison(board, you, weightedMoves, false);
+  }
+  else{
+    weightedMoves = avoidHeadCollison(board, you, weightedMoves, true);
+    collisionCount = weightedMoves["collisionCount"];
+    weightedMoves = weightedMoves["weightedMoves"];
+  }
+  
   if ("hunger" in you){
-      weightedMoves = findFood(board, you, weightedMoves);
+      weightedMoves = findFood(board, you, weightedMoves, turn);
   }
 
   // Create items array
@@ -26,7 +36,7 @@ export default function compileOptimalMoves(board, you, turn, safeMoves, simulat
 
   // Run simulation if we are not in the simulation.
   if (!simulated){
-    items = runSimulation(items, you, board, turn, safeMoves);
+    items = runSimulation(items, you, board, turn);
   }
 
   if (items[0] != undefined){
@@ -36,108 +46,136 @@ export default function compileOptimalMoves(board, you, turn, safeMoves, simulat
   if (!simulated){
     console.log(items);
     console.log(nextMove);
+    return nextMove;
   }
-  
-  return nextMove;
+  else{
+    return {
+      "nextMove": nextMove,
+      "collisionCount": collisionCount
+    }
+  }
+}
+
+function detectHead(board, you, move){
+  let moveTiles = {
+    "right": {
+      "x": you.head.x + 1,
+      "y": you.head.y,
+      "adjency": 
+      [
+        {
+        "x": you.head.x + 1,
+        "y": you.head.y + 1
+        },
+        {
+        "x": you.head.x + 1,
+        "y": you.head.y - 1
+        },
+        {
+        "x": you.head.x + 2,
+        "y": you.head.y
+        }
+      ]
+    },
+    "left": {
+      "x": you.head.x - 1,
+      "y": you.head.y,
+      "adjency": 
+      [
+        {
+        "x": you.head.x - 1,
+        "y": you.head.y + 1
+        },
+        {
+        "x": you.head.x - 1,
+        "y": you.head.y - 1
+        },
+        {
+        "x": you.head.x - 2,
+        "y": you.head.y
+        }
+      ]
+    },
+    "down": {
+      "x": you.head.x,
+      "y": you.head.y - 1,
+      "adjency": 
+      [
+        {
+        "x": you.head.x + 1,
+        "y": you.head.y - 1
+        },
+        {
+        "x": you.head.x - 1,
+        "y": you.head.y - 1
+        },
+        {
+        "x": you.head.x,
+        "y": you.head.y - 2
+        }
+      ]
+    },
+    "up": {
+      "x": you.head.x,
+      "y": you.head.y + 1,
+      "adjency": 
+      [
+        {
+        "x": you.head.x - 1,
+        "y": you.head.y + 1
+        },
+        {
+        "x": you.head.x + 1,
+        "y": you.head.y + 1
+        },
+        {
+        "x": you.head.x,
+        "y": you.head.y + 2
+        }
+      ]
+    }
+  }
+  for(let i = 0; i < board.snakes.length; i++){
+    // ignore myself in this 
+    if (you.id != board.snakes[i].id){
+      for (let tile of moveTiles[move].adjency){
+        if (board.snakes[i].head.x == tile.x && board.snakes[i].head.y == tile.y){
+          //console.log(`Enemy head found at ${board.snakes[i].head.x}, ${board.snakes[i].head.y}. Removing ${move}!`);
+          if (board.snakes[i].length >= you.body.length){
+            return -1;
+          }
+          else{
+            return Math.abs(you.hunger) * 1/10;
+          }
+        }
+      }
+    }
+  }
+  return 0;
 }
 
 //add a function to avoid head to head collison 
-function avoidHeadCollison(board, you, weightedMoves, collisionCount){
-  //for each weighted move, check if there is a snake head 
-  for(let move of Object.keys(weightedMoves)){
-    if (move == "left"){
-      for(let j = 0; j < board.snakes.length; j++){
-      //ignore myself in this 
-      if(you.id != board.snakes[j].id && you.length <= board.snakes[j].length){
-        //check if there is other snake parts around me
-        if(board.snakes[j].head.x == you.head.x-2 && 
-          board.snakes[j].head.y == you.head.y){
-          console.log(`Enemy head found at ${board.snakes[j].head.x},${board.snakes[j].head.y}. Removing left move`);
-          delete weightedMoves["left"];
-        }
-        else if(board.snakes[j].head.x == you.head.x-1 && 
-          board.snakes[j].head.y == you.head.y+1){
-          console.log(`Enemy head found at ${board.snakes[j].head.x},${board.snakes[j].head.y}. Removing left move`);
-          delete weightedMoves["left"];
-        }
-        else if(board.snakes[j].head.x == you.head.x-1 && 
-          board.snakes[j].head.y == you.head.y-1){
-          console.log(`Enemy head found at ${board.snakes[j].head.x},${board.snakes[j].head.y}. Removing left move`);
-          delete weightedMoves["left"];
-        }
-        }
-      }
-    }
-    if (move == "right"){
-      for(let j = 0; j < board.snakes.length; j++){
-      //ignore myself in this 
-      if(you.id != board.snakes[j].id && you.length <= board.snakes[j].length){
-        //check if there is other snake parts around me
-        if(board.snakes[j].head.x == you.head.x+2 && 
-          board.snakes[j].head.y == you.head.y){
-          console.log(`Enemy head found at ${board.snakes[j].head.x},${board.snakes[j].head.y}. Removing right move`);
-          delete weightedMoves["right"];
-        }
-        else if(board.snakes[j].head.x == you.head.x+1 && 
-          board.snakes[j].head.y == you.head.y+1){
-          console.log(`Enemy head found at ${board.snakes[j].head.x},${board.snakes[j].head.y}. Removing right move`);
-          delete weightedMoves["right"];
-        }
-        else if(board.snakes[j].head.x == you.head.x+1 && 
-          board.snakes[j].head.y == you.head.y-1){
-          console.log(`Enemy head found at ${board.snakes[j].head.x},${board.snakes[j].head.y}. Removing right move`);
-          delete weightedMoves["right"];
-        }
-        }
-      }
-    }
+function avoidHeadCollison(board, you, weightedMoves, simulated=false){
+  let collisionCount = 0;
 
-    if (move == "up"){
-      for(let j = 0; j < board.snakes.length; j++){
-      //ignore myself in this 
-      if(you.id != board.snakes[j].id && you.length <= board.snakes[j].length){
-        //check if there is other snake parts around me
-        if(board.snakes[j].head.x == you.head.x && 
-          board.snakes[j].head.y == you.head.y+2){
-          console.log(`Enemy head found at ${board.snakes[j].head.x},${board.snakes[j].head.y}. Removing up move`);
-          delete weightedMoves["up"];
-        }
-        else if(board.snakes[j].head.x == you.head.x+1 && 
-          board.snakes[j].head.y == you.head.y+1){
-          console.log(`Enemy head found at ${board.snakes[j].head.x},${board.snakes[j].head.y}. Removing up move`);
-          delete weightedMoves["up"];
-        }
-        else if(board.snakes[j].head.x == you.head.x-1 && 
-          board.snakes[j].head.y == you.head.y+1){
-          console.log(`Enemy head found at ${board.snakes[j].head.x},${board.snakes[j].head.y}. Removing up move`);
-          delete weightedMoves["up"];
-        }
-        }
-      }
+  let moves = Object.keys(weightedMoves);
+  //for each weighted move, check if there is a snake head 
+  for(let move of moves){
+    let weight = detectHead(board, you, move, weightedMoves);
+    if (weight == -1){
+      delete weightedMoves[move];
+      collisionCount += 1;
     }
-    if (move == "down"){
-      for(let j = 0; j < board.snakes.length; j++){
-      //ignore myself in this 
-      if(you.id != board.snakes[j].id && you.length <= board.snakes[j].length){
-        //check if there is other snake parts around me
-        if(board.snakes[j].head.x == you.head.x && 
-          board.snakes[j].head.y == you.head.y-2){
-          console.log(`Enemy head found at ${board.snakes[j].head.x},${board.snakes[j].head.y}. Removing down move`);
-          delete weightedMoves["down"];
-        }
-        else if(board.snakes[j].head.x == you.head.x+1 && 
-          board.snakes[j].head.y == you.head.y-1){
-          console.log(`Enemy head found at ${board.snakes[j].head.x},${board.snakes[j].head.y}. Removing down move`);
-          delete weightedMoves["down"];
-        }
-        else if(board.snakes[j].head.x == you.head.x-1 && 
-          board.snakes[j].head.y == you.head.y-1){
-          console.log(`Enemy head found at ${board.snakes[j].head.x},${board.snakes[j].head.y}. Removing down move`);
-          delete weightedMoves["down"];
-        }
-        }
-      }
+    else {
+      weightedMoves[move] += weight;
     }
+  }
+
+  if (simulated){
+    return {
+      "weightedMoves": weightedMoves,
+      "collisionCount": collisionCount
+    };
   }
   return weightedMoves;  
 }
