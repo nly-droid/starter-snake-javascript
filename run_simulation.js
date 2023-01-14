@@ -4,7 +4,7 @@ import {calculateYourStats, calculateBoardStats} from './calculate_stats.js';
 
 export default function runSimulation(items, you, board, gameTurn){
   for (let item of items){
-    console.log("Checking ahead for ", item);
+    //console.log("Checking ahead for ", item);
     let move = item[0];
     let maxSnakeLength = Math.ceil(board.width * 1/2);
     if ("longestSnakeLength" in board){
@@ -16,7 +16,7 @@ export default function runSimulation(items, you, board, gameTurn){
     let modifiedBoard = JSON.parse(JSON.stringify(board));
     let modifiedTurn = gameTurn;
     let snakeIndex = getSnakeIndex(you, board);
-    console.log("Our snake index is", snakeIndex);
+    //console.log("Our snake index is", snakeIndex);
     let collisionCount = 0;
     let deadWeight = 0;
     while (turn < maxTurn && snakeIndex != -1){
@@ -53,7 +53,7 @@ export default function runSimulation(items, you, board, gameTurn){
         }
         
         if (modifiedBoard.snakes[i] == null){
-          console.log("Snake", i, "will die on turn", turn);
+          //console.log("Snake", i, "will die on turn", turn);
 
           if (i !== snakeIndex){
             deadWeight += Math.round(3 * Math.max(1, 1/collisionCount) * 1/Math.max(1, turn) * 100) / 100;
@@ -70,8 +70,8 @@ export default function runSimulation(items, you, board, gameTurn){
       turn += 1;
       modifiedTurn += 1;
     }
-    console.log("Dead Weight", deadWeight);
-    console.log("Collision count", collisionCount);
+    //console.log("Dead Weight", deadWeight);
+    //console.log("Collision count", collisionCount);
     item.push(Math.round((turn - collisionCount + deadWeight) * 100) / 100);
   }
   
