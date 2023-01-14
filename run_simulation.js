@@ -10,7 +10,7 @@ export default function runSimulation(items, you, board, gameTurn){
     if ("longestSnakeLength" in board){
       maxSnakeLength = board["longestSnakeLength"];
     }
-    let maxTurn = Math.max(maxSnakeLength, Math.ceil(board.width * 1/2));
+    let maxTurn = Math.max(maxSnakeLength - 1, Math.ceil(board.width * 1/2));
     let turn = 0;
     let modifiedYou = JSON.parse(JSON.stringify(you));
     let modifiedBoard = JSON.parse(JSON.stringify(board));
@@ -49,14 +49,14 @@ export default function runSimulation(items, you, board, gameTurn){
         
         if (i == snakeIndex && modifiedBoard.snakes[i] != null){
           modifiedYou = modifiedBoard.snakes[i];
-          console.log(modifiedYou.head);
+          //console.log(modifiedYou.head);
         }
         
         if (modifiedBoard.snakes[i] == null){
           console.log("Snake", i, "will die on turn", turn);
 
           if (i !== snakeIndex){
-            deadWeight += Math.round(2 * 1/Math.max(1, turn) * 100) / 100;
+            deadWeight += Math.round(3 * Math.max(1, 1/collisionCount) * 1/Math.max(1, turn) * 100) / 100;
           }
           else{
             deadWeight -= Math.round(10 * 1/Math.max(1, turn) * 100) / 100;
@@ -70,6 +70,7 @@ export default function runSimulation(items, you, board, gameTurn){
       turn += 1;
       modifiedTurn += 1;
     }
+    console.log("Dead Weight", deadWeight);
     console.log("Collision count", collisionCount);
     item.push(Math.round((turn - collisionCount + deadWeight) * 100) / 100);
   }
@@ -82,7 +83,7 @@ export default function runSimulation(items, you, board, gameTurn){
   
   items.sort(function(first, second) {
     if (second[2] == first[2]){
-      return second[1] -first[1];
+      return second[1] - first[1];
     }
     return second[2] - first[2];}
   );
@@ -130,6 +131,7 @@ function simulateSnake(modifiedYou, modifiedBoard, move){
       let food = modifiedBoard.food[i];
       if (modifiedYou.head.x == food.x && modifiedYou.head.y == food.y){
         eatFood = true;
+        //console.log("Snake eats food at", food.x, food.y, eatFood);
         break;
       }
     }
@@ -146,8 +148,7 @@ function simulateSnake(modifiedYou, modifiedBoard, move){
 }
 
 function simulateFood(modifiedBoard, turn){
-  const FOOD_RATE = modifiedBoard.width;
-  const MAX_FOOD = modifiedBoard.width;
+  const FOOD_RATE = modifiedBoard.food.length;
   let food = modifiedBoard.food;
   
   // Remove food if snake eats it.
@@ -163,7 +164,7 @@ function simulateFood(modifiedBoard, turn){
   }
 
   // Add new food
-  if ((modifiedBoard.food.length <= MAX_FOOD && turn % FOOD_RATE == 0) || (modifiedBoard.food.length == 0)){
+  if ((turn % FOOD_RATE == 0) || (modifiedBoard.food.length == 0)){
     let newFood = {
       "x": Math.floor(Math.random() * modifiedBoard.width),
       "y": Math.floor(Math.random() * modifiedBoard.height)

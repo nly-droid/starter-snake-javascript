@@ -56,7 +56,7 @@ export default function compileOptimalMoves(board, you, turn, safeMoves, simulat
   }
 }
 
-function detectHead(board, you, move){
+function detectHead(board, you, move, weight){
   let moveTiles = {
     "right": {
       "x": you.head.x + 1,
@@ -142,10 +142,10 @@ function detectHead(board, you, move){
         if (board.snakes[i].head.x == tile.x && board.snakes[i].head.y == tile.y){
           //console.log(`Enemy head found at ${board.snakes[i].head.x}, ${board.snakes[i].head.y}. Removing ${move}!`);
           if (board.snakes[i].length >= you.body.length){
-            return -1;
+            return - 1;
           }
           else{
-            return Math.abs(you.hunger) * 1/10;
+            return Math.abs(weight) * 1/5;
           }
         }
       }
@@ -161,8 +161,8 @@ function avoidHeadCollison(board, you, weightedMoves, simulated=false){
   let moves = Object.keys(weightedMoves);
   //for each weighted move, check if there is a snake head 
   for(let move of moves){
-    let weight = detectHead(board, you, move, weightedMoves);
-    if (weight == -1){
+    let weight = detectHead(board, you, move, weightedMoves[move]);
+    if (weight < 0){
       delete weightedMoves[move];
       collisionCount += 1;
     }
