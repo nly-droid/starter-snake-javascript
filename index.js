@@ -23,10 +23,10 @@ function info() {
 
   return {
     apiversion: "1",
-    author: "",       // TODO: Your Battlesnake Username
-    color: "#888888", // TODO: Choose color
-    head: "default",  // TODO: Choose head
-    tail: "default",  // TODO: Choose tail
+    author: "BattlesnakeEZ",       // TODO: Your Battlesnake Username
+    color: "#6F4E37", // TODO: Choose color
+    head: "bonhomme",  // TODO: Choose head
+    tail: "coffee",  // TODO: Choose tail
   };
 }
 
@@ -48,34 +48,27 @@ function move(gameState) {
   // Calculate stats
   gameState = calculateStats(gameState);
 
-  let isMoveSafe = {
-    up: true,
-    down: true,
-    left: true,
-    right: true
-  };
-
   let board = gameState.board;
   let you = gameState.you;
+  let turn = gameState.turn;
 
   // Compile safe moves
-  isMoveSafe = compileSafeMoves(board, you, isMoveSafe);
-
-  const safeMoves = Object.keys(isMoveSafe).filter(key => isMoveSafe[key]);
+  let safeMoves = compileSafeMoves(board, you);
 
   if (safeMoves.length == 0) {
     console.log(`MOVE ${gameState.turn}: No safe moves detected! Moving down`);
     return { move: "down" };
   }
-
-  // Compile optimal moves
-  let weightedMoves = {};
-  for (let safeMove of safeMoves){
-    weightedMoves[safeMove] = 0;
+  //check for if there is one safe move 
+  if (safeMoves.length == 1){
+    console.log(`MOVE ${gameState.turn}: One safe move ${safeMoves[0]} detected! Moving safely!`);
+    return {move: safeMoves[0]}
   }
 
+  // Compile optimal moves
+
   let nextMove = null;
-  nextMove = compileOptimalMoves(board, you, weightedMoves);
+  nextMove = compileOptimalMoves(board, you, turn, safeMoves);
 
   if (nextMove == null){
     // Choose a random move from the safe moves if there are no optimal moves
