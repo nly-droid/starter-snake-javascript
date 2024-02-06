@@ -27,8 +27,9 @@ export function calculateYourStats(you, board){
 
 function calculateHunger(you, board){
   let hunger = 0;
+  const danger_health = MAX_HEALTH * 1/4;
   if ("optimalMaxLength" in board){
-    let healthDiff = you.health - MAX_HEALTH * 1/4;
+    let healthDiff = you.health - danger_health;
     let bodyDiff = (board.optimalMaxLength - you.body.length);
     let bodyPenalty = Math.pow(Math.abs(Math.min(0, bodyDiff)),2);
     let healthBoost = Math.pow(Math.abs(Math.min(0, healthDiff)),3);
